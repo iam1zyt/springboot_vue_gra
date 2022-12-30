@@ -55,11 +55,12 @@ public class FileController {
         //判断配置的文件目录是否存在，若不存在则创建一个新的文件目录
         File parentfile = uploadFile.getParentFile();
         if(!parentfile.exists()){
+            //创建新的文件目录
             parentfile.mkdirs();
         }
 
         String url;
-        //获取文件的md5
+        //获取文件的md5、通过对比md5避免重复上传相同的文件
         String md5 = SecureUtil.md5(file.getInputStream());
         //从数据库查询是否存在相同的记录
         Files dbFiles = getFileByMd5(md5);
@@ -77,7 +78,7 @@ public class FileController {
         saveFile.setName(originalFilename);
         saveFile.setType(type);
         saveFile.setSize(size/1024);
-        saveFile.setUrl(md5);
+        saveFile.setUrl(url);
         saveFile.setMd5(md5);
         fileMapper.insert(saveFile);
 
@@ -123,6 +124,7 @@ public class FileController {
         return Result.success(fileMapper.updateById(files));
     }
 
+//    通过id删除
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Integer id){
         Files files = fileMapper.selectById(id);
@@ -158,7 +160,7 @@ public class FileController {
 String name){
 
         QueryWrapper<Files> queryWrapper = new QueryWrapper<>();
-        //查询为删除的记录
+        //查询未删除的记录
         queryWrapper.eq("is_delete",false);
         queryWrapper.orderByDesc("id");
         if(!"".equals(name)){

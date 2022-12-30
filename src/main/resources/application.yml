@@ -21,4 +21,4 @@ mybatis-plus:
 
 files:
   upload:
-    path: D:/Code/XiaoBai/files/
+    path: D:/vue/springboot/files/
